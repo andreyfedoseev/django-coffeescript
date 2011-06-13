@@ -1,15 +1,18 @@
-from ..cache import get_cache_key, get_hexdigest
-from ..settings import COFFEESCRIPT_BIN, COFFEESCRIPT_USE_CACHE, COFFEESCRIPT_CACHE_TIMEOUT
+from ..cache import get_cache_key, get_hexdigest, get_hashed_mtime
+from ..settings import COFFEESCRIPT_BIN, COFFEESCRIPT_USE_CACHE,\
+    COFFEESCRIPT_CACHE_TIMEOUT, COFFEESCRIPT_OUTPUT_DIR
+from django.conf import settings
 from django.core.cache import cache
 from django.template.base import Library, Node
 import shlex
 import subprocess
+import os
 
 
 register = Library()
 
 
-class CoffeescriptNode(Node):
+class InlineCoffeescriptNode(Node):
 
     def __init__(self, nodelist):
         self.nodelist = nodelist
@@ -40,8 +43,44 @@ class CoffeescriptNode(Node):
         else:
             return self.compile(output)
 
-@register.tag(name="coffeescript")
-def do_coffeescript(parser, token):
-    nodelist = parser.parse(("endcoffeescript",))
+
+@register.tag(name="inlinecoffeescript")
+def do_inlinecoffeescript(parser, token):
+    nodelist = parser.parse(("endinlinecoffeescript",))
     parser.delete_first_token()
-    return CoffeescriptNode(nodelist)
+    return InlineCoffeescriptNode(nodelist)
+
+
+@register.simple_tag
+def coffeescript(path):
+
+    full_path = os.path.join(settings.MEDIA_ROOT, path)
+    filename = os.path.split(path)[-1]
+
+    output_directory = os.path.join(settings.MEDIA_ROOT, COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path))
+
+    hashed_mtime = get_hashed_mtime(full_path)
+
+    if filename.endswith(".coffee"):
+        base_filename = filename[:-7]
+    else:
+        base_filename = filename
+
+    output_path = os.path.join(output_directory, "%s-%s.js" % (base_filename, hashed_mtime))
+
+    if not os.path.exists(output_path):
+        source_file = open(full_path)
+        source = source_file.read()
+        source_file.close()
+
+        args = shlex.split("%s -c -s -p" % COFFEESCRIPT_BIN)
+        p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        out, errors = p.communicate(source)
+        if out:
+            if not os.path.exists(output_directory):
+                os.makedirs(output_directory)
+            compiled_file = open(output_path, "w+")
+            compiled_file.write(out)
+            compiled_file.close()
+
+    return output_path[len(settings.MEDIA_ROOT):]
