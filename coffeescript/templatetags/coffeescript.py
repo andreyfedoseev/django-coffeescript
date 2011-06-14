@@ -1,5 +1,5 @@
 from ..cache import get_cache_key, get_hexdigest, get_hashed_mtime
-from ..settings import COFFEESCRIPT_BIN, COFFEESCRIPT_USE_CACHE,\
+from ..settings import COFFEESCRIPT_EXECUTABLE, COFFEESCRIPT_USE_CACHE,\
     COFFEESCRIPT_CACHE_TIMEOUT, COFFEESCRIPT_OUTPUT_DIR
 from django.conf import settings
 from django.core.cache import cache
@@ -18,7 +18,7 @@ class InlineCoffeescriptNode(Node):
         self.nodelist = nodelist
 
     def compile(self, source):
-        args = shlex.split("%s -c -s -p" % COFFEESCRIPT_BIN)
+        args = shlex.split("%s -c -s -p" % COFFEESCRIPT_EXECUTABLE)
 
         p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         out, errors = p.communicate(source.encode("utf-8"))
@@ -73,7 +73,7 @@ def coffeescript(path):
         source = source_file.read()
         source_file.close()
 
-        args = shlex.split("%s -c -s -p" % COFFEESCRIPT_BIN)
+        args = shlex.split("%s -c -s -p" % COFFEESCRIPT_EXECUTABLE)
         p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         out, errors = p.communicate(source)
         if out:
