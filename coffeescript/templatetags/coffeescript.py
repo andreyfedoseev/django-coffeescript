@@ -83,4 +83,4 @@ def coffeescript(path):
             compiled_file.write(out)
             compiled_file.close()
 
-    return output_path[len(settings.MEDIA_ROOT):]
+    return output_path[len(settings.MEDIA_ROOT):].lstrip("/")
