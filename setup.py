@@ -7,17 +7,18 @@ def read(fname):
 
 
 README = read('README.rst')
+CHANGES = read('CHANGES.rst')
 
 
 setup(
     name = "django-coffeescript",
     packages = find_packages(),
-    version = "0.1",
+    version = "0.2",
     author = "Andrey Fedoseev",
     author_email = "andrey.fedoseev@gmail.com",
     url = "https://github.com/andreyfedoseev/django-coffeescript",
     description = "Django template tags to compile CoffeeScript",
-    long_description = README,
+    long_description = "\n\n".join([README, CHANGES]),
     classifiers = [
         'Development Status :: 4 - Beta',
         'Framework :: Django',
