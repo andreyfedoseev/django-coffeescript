@@ -4,3 +4,5 @@ dist
 *.egg-info
 *.egg
 .idea
+virtualenv
+COFFEESCRIPT_CACHE
