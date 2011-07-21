@@ -54,10 +54,15 @@ def do_inlinecoffeescript(parser, token):
 @register.simple_tag
 def coffeescript(path):
 
-    full_path = os.path.join(settings.MEDIA_ROOT, path)
+    try:
+        STATIC_ROOT = settings.STATIC_ROOT
+    except AttributeError:
+        STATIC_ROOT = settings.MEDIA_ROOT
+
+    full_path = os.path.join(STATIC_ROOT, path)
     filename = os.path.split(path)[-1]
 
-    output_directory = os.path.join(settings.MEDIA_ROOT, COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path))
+    output_directory = os.path.join(STATIC_ROOT, COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path))
 
     hashed_mtime = get_hashed_mtime(full_path)
 
@@ -89,4 +94,4 @@ def coffeescript(path):
                 if filename.startswith(base_filename) and filename != compiled_filename:
                     os.remove(os.path.join(output_directory, filename))
 
-    return output_path[len(settings.MEDIA_ROOT):].lstrip("/")
+    return output_path[len(STATIC_ROOT):].lstrip("/")
