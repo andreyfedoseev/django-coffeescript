@@ -13,7 +13,7 @@ CHANGES = read('CHANGES.rst')
 setup(
     name = "django-coffeescript",
     packages = find_packages(),
-    version = "0.2",
+    version = "0.3",
     author = "Andrey Fedoseev",
     author_email = "andrey.fedoseev@gmail.com",
     url = "https://github.com/andreyfedoseev/django-coffeescript",
