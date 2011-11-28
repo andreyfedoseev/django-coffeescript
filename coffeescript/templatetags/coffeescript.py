@@ -94,4 +94,4 @@ def coffeescript(path):
                 if filename.startswith(base_filename) and filename != compiled_filename:
                     os.remove(os.path.join(output_directory, filename))
 
-    return output_path[len(STATIC_ROOT):].lstrip("/")
+    return output_path[len(STATIC_ROOT):].replace(os.sep, '/').lstrip("/")
