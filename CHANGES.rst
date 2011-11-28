@@ -1,6 +1,12 @@
 Changes
 *******
 
+0.4
+---
+
+- Log coffeescript compilation errors
+- Fixed bug with paths on Windows (by syabro)
+
 0.3
 ---
 
