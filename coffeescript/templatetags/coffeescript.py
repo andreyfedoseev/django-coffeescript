@@ -4,11 +4,13 @@ from ..settings import COFFEESCRIPT_EXECUTABLE, COFFEESCRIPT_USE_CACHE,\
 from django.conf import settings
 from django.core.cache import cache
 from django.template.base import Library, Node
+import logging
 import shlex
 import subprocess
 import os
 
 
+logger = logging.getLogger("coffeescript")
 register = Library()
 
 
@@ -79,7 +81,8 @@ def coffeescript(path):
         source_file.close()
 
         args = shlex.split("%s -c -s -p" % COFFEESCRIPT_EXECUTABLE)
-        p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p = subprocess.Popen(args, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, errors = p.communicate(source)
         if out:
             if not os.path.exists(output_directory):
@@ -93,5 +96,8 @@ def coffeescript(path):
             for filename in os.listdir(output_directory):
                 if filename.startswith(base_filename) and filename != compiled_filename:
                     os.remove(os.path.join(output_directory, filename))
+        elif errors:
+            logger.error(errors)
+            return path
 
     return output_path[len(STATIC_ROOT):].replace(os.sep, '/').lstrip("/")
