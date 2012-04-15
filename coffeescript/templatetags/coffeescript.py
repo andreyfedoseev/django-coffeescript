@@ -4,10 +4,12 @@ from ..settings import COFFEESCRIPT_EXECUTABLE, COFFEESCRIPT_USE_CACHE,\
 from django.conf import settings
 from django.core.cache import cache
 from django.template.base import Library, Node
+from os.path import split, join, dirname, exists, basename
 import logging
 import shlex
 import subprocess
 import os
+
 
 
 logger = logging.getLogger("coffeescript")
@@ -52,28 +54,44 @@ def do_inlinecoffeescript(parser, token):
     parser.delete_first_token()
     return InlineCoffeescriptNode(nodelist)
 
+def coffeescript_paths(path):
+    
+    # while developing it is more confortable
+    # searching for the coffeescripts rather then 
+    # doing collectstatics all the time
+    if settings.DEBUG:
+        for sfdir in settings.STATICFILES_DIRS:
+            input_file = join(sfdir, path)
+            if exists(input_file):
+                output_dir = join(sfdir, COFFEESCRIPT_OUTPUT_DIR, dirname(path))
+                file_name = basename(path)
+                
+                return (input_file, file_name, output_dir)
+    
+    try:
+        root = settings.STATIC_ROOT
+    except AttributeError:
+        root = settings.MEDIA_ROOT
+
+    full_path = os.path.join(root, path)
+    filename = os.path.split(path)[-1]
+    
+    output_directory = os.path.join(root, COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path))
+    
+    return (full_path, filename, output_directory)
 
 @register.simple_tag
 def coffeescript(path):
-
-    try:
-        STATIC_ROOT = settings.STATIC_ROOT
-    except AttributeError:
-        STATIC_ROOT = settings.MEDIA_ROOT
-
-    full_path = os.path.join(STATIC_ROOT, path)
-    filename = os.path.split(path)[-1]
-
-    output_directory = os.path.join(STATIC_ROOT, COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path))
-
+    logger.info("processing file %s" % path)
+    
+    full_path, filename, output_directory = coffeescript_paths(path)
+    
     hashed_mtime = get_hashed_mtime(full_path)
 
-    if filename.endswith(".coffee"):
-        base_filename = filename[:-7]
-    else:
-        base_filename = filename
+    base_filename = filename.replace(".coffee","")
 
-    output_path = os.path.join(output_directory, "%s-%s.js" % (base_filename, hashed_mtime))
+    output_file = "%s-%s.js" % (base_filename, hashed_mtime)
+    output_path = os.path.join(output_directory, output_file)
 
     if not os.path.exists(output_path):
         source_file = open(full_path)
@@ -100,4 +118,4 @@ def coffeescript(path):
             logger.error(errors)
             return path
 
-    return output_path[len(STATIC_ROOT):].replace(os.sep, '/').lstrip("/")
+    return join(COFFEESCRIPT_OUTPUT_DIR,dirname(path),output_file)
