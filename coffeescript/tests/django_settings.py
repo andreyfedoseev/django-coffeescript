@@ -1,8 +1,14 @@
 from django.conf.global_settings import *
 import os
 
+DEBUG = True
 
-STATIC_ROOT = MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
+STATIC_ROOT = MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'static')
+
+STATICFILES_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'staticfiles_dir'),
+)
+
 INSTALLED_APPS = (
     "coffeescript",
 )
