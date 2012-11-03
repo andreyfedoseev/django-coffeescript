@@ -11,7 +11,6 @@ import subprocess
 import os
 
 
-
 logger = logging.getLogger("coffeescript")
 register = Library()
 
@@ -67,11 +66,18 @@ def coffeescript_paths(path):
     # doing collectstatics all the time
     if settings.DEBUG:
         for sfdir in settings.STATICFILES_DIRS:
-            input_file = join(sfdir, path)
+            prefix = None
+            if isinstance(sfdir, (tuple, list)):
+                prefix, sfdir = sfdir
+            if prefix:
+                if not path.startswith(prefix):
+                    continue
+                input_file = join(sfdir, path[len(prefix):].lstrip(os.sep))
+            else:
+                input_file = join(sfdir, path)
             if exists(input_file):
                 output_dir = join(root, COFFEESCRIPT_OUTPUT_DIR, dirname(path))
                 file_name = basename(path)
-                
                 return input_file, file_name, output_dir
     
     full_path = os.path.join(root, path)
@@ -119,4 +125,4 @@ def coffeescript(path):
             logger.error(errors)
             return path
 
-    return join(COFFEESCRIPT_OUTPUT_DIR,dirname(path),output_file)
+    return join(COFFEESCRIPT_OUTPUT_DIR, dirname(path), output_file)

@@ -7,6 +7,7 @@ STATIC_ROOT = MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'static')
 
 STATICFILES_DIRS = (
     os.path.join(os.path.dirname(__file__), 'staticfiles_dir'),
+    ("prefix", os.path.join(os.path.dirname(__file__), 'staticfiles_dir_with_prefix')),
 )
 
 INSTALLED_APPS = (

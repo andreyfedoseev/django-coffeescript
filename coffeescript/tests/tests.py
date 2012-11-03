@@ -111,5 +111,24 @@ class CoffeeScriptTestCase(TestCase):
         )
 
 
+        template = Template("""
+        {% load coffeescript %}
+        {% coffeescript "prefix/another_test.coffee" %}
+        """)
+        compiled_filename_re = re.compile(r"COFFEESCRIPT_CACHE/prefix/another_test-[a-f0-9]{12}.js")
+        compiled_filename = template.render(self._get_request_context()).strip()
+        self.assertTrue(bool(compiled_filename_re.match(compiled_filename)))
+
+        compiled_path = os.path.join(self.django_settings.STATIC_ROOT, compiled_filename)
+        compiled_content = open(compiled_path).read()
+        compiled = """(function() {
+  console.log("Hello, World from STATICFILES_DIRS with prefix!");
+}).call(this);
+"""
+        self.assertEquals(
+            self._clean_javascript(compiled_content),
+            self._clean_javascript(compiled)
+        )
+
 if __name__ == '__main__':
     main()
