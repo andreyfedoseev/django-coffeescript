@@ -1,6 +1,11 @@
 Changes
 *******
 
+0.5
+---
+
+- When in DEBUG mode lookup coffee scripts in all STATICFILES_DIRS
+
 0.4
 ---
 
