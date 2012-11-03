@@ -2,7 +2,7 @@ Changes
 *******
 
 0.5.1
----
+-----
 
 - Add support for STATICFILES_DIRS with prefixes
 
