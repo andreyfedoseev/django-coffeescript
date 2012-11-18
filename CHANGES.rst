@@ -4,7 +4,7 @@ Changes
 0.6
 ----
 
- - Switch to staticfiles.finders when looking up the files in DEBUG mode.
+- Switch to staticfiles.finders when looking up the files in DEBUG mode.
 
 
 0.5.1
