@@ -65,7 +65,7 @@ def coffeescript_paths(path):
 
     if settings.DEBUG and not os.path.exists(full_path):
         # while developing it is more confortable
-        # searching for the scss files rather then
+        # searching for the coffeescript files rather then
         # doing collectstatics all the time
         full_path = finders.find(path)
 
