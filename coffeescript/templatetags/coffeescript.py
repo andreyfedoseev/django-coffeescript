@@ -1,10 +1,10 @@
 from ..cache import get_cache_key, get_hexdigest, get_hashed_mtime
+from django.contrib.staticfiles import finders
 from ..settings import COFFEESCRIPT_EXECUTABLE, COFFEESCRIPT_USE_CACHE,\
     COFFEESCRIPT_CACHE_TIMEOUT, COFFEESCRIPT_OUTPUT_DIR, POSIX_COMPATIBLE
 from django.conf import settings
 from django.core.cache import cache
-from django.template.base import Library, Node
-from os.path import join, dirname, exists, basename
+from django.template.base import Library, Node, TemplateSyntaxError
 import logging
 import shlex
 import subprocess
@@ -57,35 +57,26 @@ def do_inlinecoffeescript(parser, token):
 def coffeescript_paths(path):
 
     try:
-        root = settings.STATIC_ROOT
+        STATIC_ROOT = settings.STATIC_ROOT
     except AttributeError:
-        root = settings.MEDIA_ROOT
+        STATIC_ROOT = settings.MEDIA_ROOT
 
-    # while developing it is more confortable
-    # searching for the coffeescripts rather then 
-    # doing collectstatics all the time
-    if settings.DEBUG:
-        for sfdir in settings.STATICFILES_DIRS:
-            prefix = None
-            if isinstance(sfdir, (tuple, list)):
-                prefix, sfdir = sfdir
-            if prefix:
-                if not path.startswith(prefix):
-                    continue
-                input_file = join(sfdir, path[len(prefix):].lstrip(os.sep))
-            else:
-                input_file = join(sfdir, path)
-            if exists(input_file):
-                output_dir = join(root, COFFEESCRIPT_OUTPUT_DIR, dirname(path))
-                file_name = basename(path)
-                return input_file, file_name, output_dir
-    
-    full_path = os.path.join(root, path)
+    full_path = os.path.join(STATIC_ROOT, path)
+
+    if settings.DEBUG and not os.path.exists(full_path):
+        # while developing it is more confortable
+        # searching for the scss files rather then
+        # doing collectstatics all the time
+        full_path = finders.find(path)
+
+        if full_path is None:
+            raise TemplateSyntaxError("Can't find staticfile named: {}".format(path))
+
     file_name = os.path.split(path)[-1]
-    
-    output_dir = os.path.join(root, COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path))
+    output_dir = os.path.join(STATIC_ROOT, COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path))
     
     return full_path, file_name, output_dir
+
 
 @register.simple_tag
 def coffeescript(path):
@@ -125,4 +116,4 @@ def coffeescript(path):
             logger.error(errors)
             return path
 
-    return join(COFFEESCRIPT_OUTPUT_DIR, dirname(path), output_file)
+    return os.path.join(COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path), output_file)
