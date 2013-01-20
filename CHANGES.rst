@@ -1,6 +1,11 @@
 Changes
 *******
 
+Dev
+----
+
+- Always create a compiled file, even if no output was received from compiler
+
 0.7
 ----
 

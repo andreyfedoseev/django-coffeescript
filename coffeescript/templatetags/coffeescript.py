@@ -106,20 +106,21 @@ def coffeescript(path):
         p = subprocess.Popen(args, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, errors = p.communicate(source)
-        if out:
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            compiled_file = open(output_path, "w+")
-            compiled_file.write(out)
-            compiled_file.close()
 
-            # Remove old files
-            compiled_filename = os.path.split(output_path)[-1]
-            for filename in os.listdir(output_dir):
-                if filename.startswith(base_file_name) and filename != compiled_filename:
-                    os.remove(os.path.join(output_dir, filename))
-        elif errors:
+        if errors:
             logger.error(errors)
             return path
+
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        compiled_file = open(output_path, "w+")
+        compiled_file.write(out)
+        compiled_file.close()
+
+        # Remove old files
+        compiled_filename = os.path.split(output_path)[-1]
+        for filename in os.listdir(output_dir):
+            if filename.startswith(base_file_name) and filename != compiled_filename:
+                os.remove(os.path.join(output_dir, filename))
 
     return os.path.join(COFFEESCRIPT_OUTPUT_DIR, os.path.dirname(path), output_file)
