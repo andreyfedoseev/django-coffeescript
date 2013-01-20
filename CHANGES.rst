@@ -5,6 +5,7 @@ Dev
 ----
 
 - Add COFFEESCRIPT_ROOT setting
+- Add staticfiles finder to serve compiled files in dev mode
 
 
 0.6

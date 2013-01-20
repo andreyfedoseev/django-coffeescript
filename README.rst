@@ -12,6 +12,16 @@ Installation
    `CoffeeScript official site <http://jashkenas.github.com/coffee-script/>`_ for details.
 3. Optionally, you can specify the full path to ``coffee`` executable with ``COFFEESCRIPT_EXECUTABLE`` setting.
    By default it's set to ``coffee``.
+4. In case you use Django’s staticfiles contrib app you have to add django-coffeescript’s file finder to the ``STATICFILES_FINDERS`` setting, for example :
+
+::
+
+    STATICFILES_FINDERS = (
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+        # other finders..
+        'coffeescript.finders.CoffeescriptFinder',
+    )
 
 Example Usage
 *************
