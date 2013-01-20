@@ -1,6 +1,12 @@
 Changes
 *******
 
+Dev
+----
+
+- Add COFFEESCRIPT_ROOT setting
+
+
 0.6
 ----
 

@@ -60,7 +60,7 @@ renders to
     </script>
 
 Note that by default compiled files are saved into ``COFFEESCRIPT_CACHE`` folder under your ``STATIC_ROOT`` (or ``MEDIA_ROOT`` if you have no ``STATIC_ROOT`` in your settings).
-You can change this folder name with ``COFFEESCRIPT_OUTPUT_DIR`` setting.
+You can change this folder name with ``COFFEESCRIPT_ROOT`` and ``COFFEESCRIPT_OUTPUT_DIR`` settings.
 
 
 Settings
@@ -69,8 +69,11 @@ Settings
 ``COFFEESCRIPT_EXECUTABLE``
     Path to CoffeeScript compiler executable. Default: ``"coffee"``.
 
+``COFFEESCRIPT_ROOT``
+    Controls the absolute file path that compiled files will be written to. Default: ``STATIC_ROOT``.
+
 ``COFFEESCRIPT_OUTPUT_DIR``
-    Output directory for compiled external scripts. It's relative to ``STATIC_ROOT``. Default: ``"COFFEESCRIPT_CACHE"``.
+    Controls the directory inside ``COFFEESCRIPT_ROOT`` that compiled files will be written to. Default: ``"COFFEESCRIPT_CACHE"``.
 
 ``COFFEESCRIPT_USE_CACHE``
     Whether to use cache for inline scripts. Default: ``True``.
