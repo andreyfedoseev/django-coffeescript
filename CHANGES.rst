@@ -1,8 +1,8 @@
 Changes
 *******
 
-Dev
-----
+0.7.2
+------
 
 - Use hashlib instead of django.utils.hashcompat which is deprecated in Django 1.5
 
