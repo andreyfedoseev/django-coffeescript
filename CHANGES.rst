@@ -1,6 +1,11 @@
 Changes
 *******
 
+Dev
+----
+
+- Use hashlib instead of django.utils.hashcompat which is deprecated in Django 1.5
+
 0.7.1
 ------
 
